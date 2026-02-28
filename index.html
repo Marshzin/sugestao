@@ -3,301 +3,101 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Democrata • Portal de Perguntas</title>
+  <title>Democrata • Perguntas</title>
   <style>
     :root{
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --text: #101828;
-      --muted: #667085;
-      --line: #e4e7ec;
-      --primary: #2563eb;
-      --primary2:#1d4ed8;
-      --ok:#16a34a;
-      --warn:#f59e0b;
-      --shadow: 0 10px 28px rgba(16,24,40,.10);
-      --radius: 18px;
-      --radius2: 14px;
+      --bg:#f6f7fb; --card:#fff; --text:#101828; --muted:#667085; --line:#e4e7ec;
+      --primary:#2563eb; --primary2:#1d4ed8; --shadow:0 10px 28px rgba(16,24,40,.10);
+      --r:18px; --r2:14px;
     }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color:var(--text);
-      background:
-        radial-gradient(1100px 500px at 10% -10%, rgba(37,99,235,.15), transparent 55%),
-        radial-gradient(900px 500px at 95% 0%, rgba(22,163,74,.12), transparent 52%),
-        var(--bg);
-      min-height:100vh;
-    }
-    a{ color:inherit; }
-    .wrap{ max-width: 1120px; margin: 0 auto; padding: 18px; }
-    .header{
-      background: rgba(255,255,255,.85);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      padding: 14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .brand{ display:flex; align-items:center; gap:12px; min-width:280px; }
-    .mark{
-      width:44px; height:44px; border-radius:16px;
-      background: linear-gradient(135deg, var(--primary), rgba(37,99,235,.35));
-      color:white;
-      display:grid; place-items:center;
-      font-weight:900;
-      box-shadow: 0 10px 24px rgba(37,99,235,.25);
-    }
-    .brand h1{ margin:0; font-size:15px; letter-spacing:.2px; }
-    .brand p{ margin:3px 0 0; font-size:12px; color:var(--muted); }
-    .right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .chip{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.9);
-      padding:8px 10px;
-      border-radius: 999px;
-      font-size:12px;
-      color: var(--muted);
-    }
-    .chip strong{ color: var(--text); }
-    .btn{
-      border:0;
-      cursor:pointer;
-      border-radius: 999px;
-      padding:10px 12px;
-      font-weight:800;
-      font-size:13px;
-      background: var(--primary);
-      color:white;
-      transition: .15s ease;
-    }
-    .btn:hover{ background: var(--primary2); }
-    .btn.secondary{
-      background: white;
-      color: var(--text);
-      border:1px solid var(--line);
-    }
-    .btn:disabled{ opacity:.6; cursor:not-allowed; }
-
-    .layout{
-      margin-top:14px;
-      display:grid;
-      gap:14px;
-      grid-template-columns: 1fr;
-    }
-    @media(min-width: 980px){
-      .layout{ grid-template-columns: 420px 1fr; }
-    }
-
-    .panel{
-      background: rgba(255,255,255,.92);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-    .panelHeader{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      padding-bottom: 10px;
-      border-bottom:1px solid var(--line);
-      margin-bottom: 12px;
-    }
-    .panelHeader h2{ margin:0; font-size:14px; }
-    .hint{ font-size:12px; color: var(--muted); line-height:1.35; }
-
-    label{ display:block; font-size:12px; color: var(--muted); margin: 0 0 6px; }
-    input, textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:white;
-      border-radius: var(--radius2);
-      padding: 12px;
-      outline:none;
-      font-size:14px;
-    }
-    textarea{ min-height: 120px; resize: vertical; }
-    .row{ display:grid; gap:10px; }
-    .status{ font-size:12px; color: var(--muted); }
-    .status.ok{ color: var(--ok); }
-    .status.warn{ color: var(--warn); }
-
-    .tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .tab{
-      border:1px solid var(--line);
-      background:white;
-      padding:10px 12px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:800;
-      cursor:pointer;
-      color: var(--muted);
-    }
-    .tab.active{
-      color: var(--text);
-      border-color: rgba(37,99,235,.35);
-      background: rgba(37,99,235,.08);
-    }
-
-    .feed{
-      display:grid;
-      gap:12px;
-    }
-    .ticket{
-      background:white;
-      border:1px solid var(--line);
-      border-radius: 16px;
-      box-shadow: 0 8px 18px rgba(16,24,40,.06);
-      overflow:hidden;
-    }
-    .ticketTop{
-      padding:12px 14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      border-bottom:1px solid var(--line);
-      background: rgba(246,247,251,.65);
-    }
-    .ticketTop .meta{
-      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-      font-size:12px;
-      color: var(--muted);
-    }
-    .badge{
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:white;
-      font-weight:800;
-      color: var(--muted);
-    }
-    .badge.open{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); }
-    .badge.done{ border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.08); }
-
-    .ticketBody{ padding: 14px; }
-    .q{ white-space:pre-wrap; line-height:1.45; font-size:14px; }
-    .answer{
-      margin-top:12px;
-      border-left: 4px solid rgba(37,99,235,.55);
-      background: rgba(37,99,235,.06);
-      padding: 12px;
-      border-radius: 12px;
-    }
-    .answer strong{ display:block; margin-bottom:6px; font-size:12px; text-transform:uppercase; letter-spacing:.4px; color: var(--muted); }
-    .adminArea{
-      margin-top:12px;
-      padding-top:12px;
-      border-top:1px dashed var(--line);
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .adminArea input{ flex:1; min-width:220px; }
-    .small{ font-size:12px; color: var(--muted); }
-
-    .empty{
-      padding:16px;
-      border:1px dashed var(--line);
-      border-radius: 16px;
-      background: rgba(255,255,255,.75);
-      color: var(--muted);
-      text-align:center;
-    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;color:var(--text);
+      background:radial-gradient(1100px 500px at 10% -10%, rgba(37,99,235,.14), transparent 55%), var(--bg); }
+    .wrap{max-width:1120px;margin:0 auto;padding:18px}
+    .header{background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:var(--r);
+      box-shadow:var(--shadow);padding:14px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+    .brand{display:flex;gap:12px;align-items:center;min-width:280px}
+    .mark{width:44px;height:44px;border-radius:16px;background:linear-gradient(135deg,var(--primary),rgba(37,99,235,.35));
+      color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:0 10px 24px rgba(37,99,235,.25)}
+    .brand h1{margin:0;font-size:15px}
+    .brand p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+    .chip{border:1px solid var(--line);background:#fff;padding:8px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
+    .chip strong{color:var(--text)}
+    .btn{border:0;cursor:pointer;border-radius:999px;padding:10px 12px;font-weight:800;font-size:13px;background:var(--primary);color:#fff}
+    .btn:hover{background:var(--primary2)}
+    .btn.secondary{background:#fff;color:var(--text);border:1px solid var(--line)}
+    .layout{margin-top:14px;display:grid;gap:14px;grid-template-columns:1fr}
+    @media(min-width:980px){.layout{grid-template-columns:420px 1fr}}
+    .panel{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
+    .panelHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+    .panelHeader h2{margin:0;font-size:14px}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    input,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:var(--r2);padding:12px;outline:none;font-size:14px}
+    textarea{min-height:120px;resize:vertical}
+    .hint{font-size:12px;color:var(--muted);line-height:1.35;margin-top:6px}
+    .row{display:grid;gap:10px}
+    .status{font-size:12px;color:var(--muted)}
+    .feed{display:grid;gap:12px}
+    .ticket{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 18px rgba(16,24,40,.06);overflow:hidden}
+    .ticketTop{padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1px solid var(--line);background:rgba(246,247,251,.65)}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+    .badge{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;font-weight:800;color:var(--muted)}
+    .badge.open{border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.08)}
+    .badge.done{border-color:rgba(22,163,74,.35);background:rgba(22,163,74,.08)}
+    .ticketBody{padding:14px}
+    .q{white-space:pre-wrap;line-height:1.45;font-size:14px}
+    .answer{margin-top:12px;border-left:4px solid rgba(37,99,235,.55);background:rgba(37,99,235,.06);padding:12px;border-radius:12px}
+    .answer strong{display:block;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+    .empty{padding:16px;border:1px dashed var(--line);border-radius:16px;background:rgba(255,255,255,.75);color:var(--muted);text-align:center}
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="header">
       <div class="brand">
         <div class="mark">D</div>
         <div>
-          <h1>Portal de Perguntas • Democrata</h1>
-          <p>Envie dúvidas/sugestões e acompanhe as respostas da gestão.</p>
+          <h1>Perguntas • Democrata</h1>
+          <p>Canal público interno para perguntas e respostas da gestão.</p>
         </div>
       </div>
-
-      <div class="right">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <div class="chip" id="countChip"><strong>—</strong> registros</div>
+        <a class="btn secondary" href="/responder" style="text-decoration:none;display:inline-block;">Área da dona</a>
         <button class="btn secondary" id="refreshBtn" type="button">Atualizar</button>
       </div>
     </div>
 
     <div class="layout">
-      <!-- LADO ESQUERDO: ENVIAR + ADMIN -->
       <div class="panel">
         <div class="panelHeader">
           <h2>Nova pergunta</h2>
-          <span class="small">Público</span>
+          <span class="badge open">Público</span>
         </div>
 
         <div class="row">
           <div>
             <label for="email">E-mail (opcional — não aparece no feed)</label>
             <input id="email" type="email" placeholder="ex.: vendedor@loja.com" />
-            <div class="hint">Fica salvo apenas para controle interno no Firebase.</div>
+            <div class="hint">O e-mail é armazenado apenas no Firebase para controle interno.</div>
           </div>
-
           <div>
             <label for="question">Pergunta / sugestão</label>
             <textarea id="question" placeholder="Digite sua pergunta ou sugestão..."></textarea>
-            <div class="hint">Máximo de 1000 caracteres. Evite dados sensíveis.</div>
+            <div class="hint">Máximo de 1000 caracteres.</div>
           </div>
-
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <button class="btn" id="sendBtn" type="button">Enviar</button>
             <span class="status" id="status"></span>
           </div>
         </div>
-
-        <div style="margin-top:16px;">
-          <div class="panelHeader" style="border-bottom:0; margin-bottom:8px;">
-            <h2>Admin (dona)</h2>
-            <span class="small" id="authState">Não autenticado</span>
-          </div>
-
-          <div class="row">
-            <div>
-              <label for="adminEmail">E-mail</label>
-              <input id="adminEmail" type="email" placeholder="ex.: dona@democrata.com" />
-            </div>
-            <div>
-              <label for="adminPass">Senha</label>
-              <input id="adminPass" type="password" placeholder="********" />
-            </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn" id="loginBtn" type="button">Entrar</button>
-              <button class="btn secondary" id="logoutBtn" type="button" style="display:none;">Sair</button>
-            </div>
-            <div class="hint">Ao entrar, aparecerá o campo “Responder” em cada registro.</div>
-          </div>
-        </div>
       </div>
 
-      <!-- LADO DIREITO: FEED -->
       <div class="panel">
         <div class="panelHeader">
           <h2>Feed</h2>
-          <div class="tabs">
-            <button class="tab active" data-filter="all">Todos</button>
-            <button class="tab" data-filter="open">Aguardando</button>
-            <button class="tab" data-filter="done">Respondidos</button>
-          </div>
+          <span class="badge" id="filterBadge">Todos</span>
         </div>
-
         <div class="feed" id="feed"></div>
       </div>
     </div>
@@ -305,15 +105,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, serverTimestamp,
-      query, orderBy, limit, onSnapshot, updateDoc, doc
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-    import {
-      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    // ✅ SEU firebaseConfig (já inserido)
     const firebaseConfig = {
       apiKey: "AIzaSyAAc_t3A2TrhAX8cvbq5IAwttCM-7ffIiM",
       authDomain: "oioi-6bf50.firebaseapp.com",
@@ -326,158 +119,80 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
 
     const $ = (id) => document.getElementById(id);
-
-    // Inputs
     const emailEl = $("email");
     const questionEl = $("question");
     const sendBtn = $("sendBtn");
     const statusEl = $("status");
-
-    // Admin
-    const authStateEl = $("authState");
-    const adminEmailEl = $("adminEmail");
-    const adminPassEl = $("adminPass");
-    const loginBtn = $("loginBtn");
-    const logoutBtn = $("logoutBtn");
-
-    // Feed
     const feedEl = $("feed");
     const countChip = $("countChip");
     const refreshBtn = $("refreshBtn");
 
-    // Filter tabs
-    const filterTabs = document.querySelectorAll(".tab");
-    let currentFilter = "all";
-
-    let isAdmin = false;
-    let latestItems = [];
-    let unsubscribe = null;
-
     function escapeHtml(s){
-      return String(s || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+      return String(s||"")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
-
     function fmtDate(ts){
       if(!ts) return "—";
       const d = ts.toDate ? ts.toDate() : new Date(ts);
       return d.toLocaleString("pt-BR");
     }
-
-    function setStatus(text, kind){
+    function setStatus(text){
       statusEl.textContent = text || "";
-      statusEl.className = "status" + (kind ? " " + kind : "");
-      if(text) setTimeout(() => { statusEl.textContent = ""; statusEl.className="status"; }, 2200);
+      if(text) setTimeout(()=>statusEl.textContent="", 2200);
     }
 
-    // Auth
-    onAuthStateChanged(auth, (user) => {
-      isAdmin = !!user;
-      authStateEl.textContent = user ? `Autenticado: ${user.email}` : "Não autenticado";
-      logoutBtn.style.display = user ? "" : "none";
-      render(latestItems);
-    });
-
-    loginBtn.addEventListener("click", async () => {
-      const email = (adminEmailEl.value || "").trim();
-      const pass = (adminPassEl.value || "").trim();
-      if(!email || !pass) return alert("Informe e-mail e senha.");
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Entrando...";
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-      }catch(e){
-        alert("Falha no login. Verifique e-mail/senha.");
-      }finally{
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Entrar";
-      }
-    });
-
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-    });
-
-    // Create question
     sendBtn.addEventListener("click", async () => {
       const email = (emailEl.value || "").trim();
       const question = (questionEl.value || "").trim();
-
-      if(!question) return setStatus("Digite a pergunta/sugestão.", "warn");
-      if(question.length > 1000) return setStatus("Texto muito longo (máx. 1000).", "warn");
+      if(!question) return setStatus("Digite a pergunta/sugestão.");
+      if(question.length > 1000) return setStatus("Texto muito longo (máx. 1000).");
 
       sendBtn.disabled = true;
-      setStatus("Enviando...", "");
-
+      setStatus("Enviando...");
       try{
         await addDoc(collection(db, "questions"), {
           question,
-          email,                 // não exibimos
+          email,
           createdAt: serverTimestamp(),
           answer: "",
           answeredAt: null
         });
         questionEl.value = "";
-        setStatus("Enviado com sucesso.", "ok");
+        setStatus("Enviado com sucesso.");
       }catch(e){
         console.error(e);
-        alert("Não foi possível enviar. Verifique firebaseConfig e regras do Firestore.");
+        alert("Falha ao enviar. Verifique regras do Firestore e configuração do Firebase.");
+        setStatus("");
       }finally{
         sendBtn.disabled = false;
       }
     });
 
-    // Filters
-    filterTabs.forEach(btn => {
-      btn.addEventListener("click", () => {
-        filterTabs.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.filter;
-        render(latestItems);
-      });
-    });
-
-    // Firestore realtime
+    let unsub = null;
     function startFeed(){
-      if(unsubscribe) unsubscribe();
-      const qAll = query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(150));
-      unsubscribe = onSnapshot(qAll, (snap) => {
+      if(unsub) unsub();
+      const qAll = query(collection(db, "questions"), orderBy("createdAt","desc"), limit(150));
+      unsub = onSnapshot(qAll, (snap) => {
         const items = [];
         snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-        latestItems = items;
         countChip.innerHTML = `<strong>${items.length}</strong> registros`;
         render(items);
       });
     }
 
-    refreshBtn.addEventListener("click", () => startFeed());
-
-    function applyFilter(items){
-      if(currentFilter === "open") return items.filter(x => !x.answer);
-      if(currentFilter === "done") return items.filter(x => !!x.answer);
-      return items;
-    }
-
     function render(items){
-      const filtered = applyFilter(items);
       feedEl.innerHTML = "";
-
-      if(!filtered.length){
-        feedEl.innerHTML = `<div class="empty">Nenhum registro para este filtro.</div>`;
+      if(!items.length){
+        feedEl.innerHTML = `<div class="empty">Ainda não há registros.</div>`;
         return;
       }
-
-      for(const it of filtered){
+      for(const it of items){
         const created = fmtDate(it.createdAt);
-        const proto = (it.id || "").slice(0, 8);
-        const isDone = !!it.answer;
+        const proto = (it.id || "").slice(0,8);
+        const done = !!it.answer;
 
         const el = document.createElement("div");
         el.className = "ticket";
@@ -487,63 +202,24 @@
               <span class="badge">Protocolo: ${escapeHtml(proto)}</span>
               <span class="badge">Enviada: ${escapeHtml(created)}</span>
             </div>
-            <span class="badge ${isDone ? "done" : "open"}">${isDone ? "Respondida" : "Aguardando"}</span>
+            <span class="badge ${done ? "done" : "open"}">${done ? "Respondida" : "Aguardando"}</span>
           </div>
-
           <div class="ticketBody">
             <div class="q">${escapeHtml(it.question)}</div>
-
             ${it.answer ? `
               <div class="answer">
                 <strong>Resposta da gestão</strong>
                 <div>${escapeHtml(it.answer)}</div>
-                <div class="small" style="margin-top:8px;">Respondida: ${escapeHtml(fmtDate(it.answeredAt))}</div>
-              </div>
-            ` : ""}
-
-            ${isAdmin ? `
-              <div class="adminArea">
-                <input type="text" placeholder="Digite a resposta..." data-answer="${escapeHtml(it.id)}">
-                <button class="btn" type="button" data-send-answer="${escapeHtml(it.id)}">Responder</button>
+                <div style="margin-top:8px;font-size:12px;color:#667085">Respondida: ${escapeHtml(fmtDate(it.answeredAt))}</div>
               </div>
             ` : ""}
           </div>
         `;
         feedEl.appendChild(el);
       }
-
-      bindAdminActions();
     }
 
-    function bindAdminActions(){
-      if(!isAdmin) return;
-
-      document.querySelectorAll("button[data-send-answer]").forEach(btn => {
-        btn.onclick = async () => {
-          const id = btn.getAttribute("data-send-answer");
-          const input = document.querySelector(`input[data-answer="${CSS.escape(id)}"]`);
-          const answer = (input?.value || "").trim();
-          if(!answer) return alert("Digite a resposta.");
-
-          btn.disabled = true;
-          btn.textContent = "Enviando...";
-          try{
-            await updateDoc(doc(db, "questions", id), {
-              answer,
-              answeredAt: serverTimestamp()
-            });
-            input.value = "";
-          }catch(e){
-            console.error(e);
-            alert("Não foi possível responder. Verifique regras do Firestore e login.");
-          }finally{
-            btn.disabled = false;
-            btn.textContent = "Responder";
-          }
-        };
-      });
-    }
-
+    refreshBtn.addEventListener("click", startFeed);
     startFeed();
   </script>
 </body>
