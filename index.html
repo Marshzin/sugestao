@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Democrata • Perguntas e Sugestões</title>
+  <style>
+    :root { --bg:#0b0f14; --card:#121826; --muted:#9aa4b2; --text:#e6edf3; --line:#243044; }
+    body{ margin:0; font-family:system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,#0b0f14,#070a0f); color:var(--text); }
+    .wrap{ max-width:920px; margin:0 auto; padding:20px; }
+    header{ display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    h1{ font-size:18px; margin:0; letter-spacing:.2px; }
+    .badge{ font-size:12px; color:var(--muted); border:1px solid var(--line); padding:6px 10px; border-radius:999px; }
+    .card{ background:rgba(18,24,38,.92); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:0 12px 30px rgba(0,0,0,.35); }
+    .stack{ display:grid; gap:12px; }
+    label{ font-size:12px; color:var(--muted); display:block; margin:0 0 6px; }
+    input, textarea{ width:100%; box-sizing:border-box; background:#0e1422; color:var(--text); border:1px solid var(--line);
+      padding:12px 12px; border-radius:12px; outline:none; }
+    textarea{ min-height:88px; resize:vertical; }
+    .row{ display:grid; grid-template-columns:1fr; gap:12px; }
+    @media (min-width:720px){ .row{ grid-template-columns: 1fr 1fr; } }
+    button{ background:#2b74ff; color:white; border:0; padding:12px 14px; border-radius:12px; cursor:pointer; font-weight:600; }
+    button:disabled{ opacity:.6; cursor:not-allowed; }
+    .sub{ font-size:12px; color:var(--muted); line-height:1.35; }
+    .feed{ margin-top:14px; display:grid; gap:12px; }
+    .item{ padding:14px; border:1px solid var(--line); border-radius:14px; background:rgba(10,14,22,.55); }
+    .meta{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+    .date{ font-size:12px; color:var(--muted); }
+    .q{ margin:10px 0 0; white-space:pre-wrap; }
+    .a{ margin:12px 0 0; padding:12px; border-radius:12px; border:1px dashed #38527a; background:rgba(43,116,255,.08); }
+    .a strong{ display:block; margin-bottom:6px; }
+    .admin{ margin-top:10px; padding-top:10px; border-top:1px solid rgba(36,48,68,.6); }
+    .admin small{ color:var(--muted); }
+    .msg{ font-size:13px; color:var(--muted); }
+    .top-actions{ display:flex; gap:8px; align-items:center; }
+    .linkbtn{ background:transparent; border:1px solid var(--line); color:var(--text); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Democrata • Perguntas e Sugestões</h1>
+      <div class="top-actions">
+        <span class="badge" id="count">—</span>
+        <button class="linkbtn" id="refreshBtn" type="button">Atualizar</button>
+      </div>
+    </header>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="stack">
+        <div class="row">
+          <div>
+            <label for="email">E-mail (opcional, não será exibido)</label>
+            <input id="email" type="email" placeholder="ex.: vendedor@loja.com" />
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <div class="sub">O e-mail é apenas para identificar várias perguntas da mesma pessoa (fica registrado somente na planilha).</div>
+          </div>
+        </div>
+
+        <div>
+          <label for="pergunta">Pergunta / sugestão</label>
+          <textarea id="pergunta" placeholder="Digite aqui..."></textarea>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button id="sendBtn" type="button">Enviar</button>
+          <span class="msg" id="status"></span>
+        </div>
+      </div>
+
+      <div class="feed" id="feed"></div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ SUA URL DO APPS SCRIPT (Web App /exec)
+    const API_URL = "https://script.google.com/macros/s/AKfycbyEEro0FW1u2wx8DNSvRIGvOS0PrR2QFMRSfIs_2kAemBHoXPJr8B4JTzPCs2cMhrUX/exec";
+
+    const $ = (id) => document.getElementById(id);
+
+    const emailEl = $("email");
+    const perguntaEl = $("pergunta");
+    const sendBtn = $("sendBtn");
+    const statusEl = $("status");
+    const feedEl = $("feed");
+    const countEl = $("count");
+    const refreshBtn = $("refreshBtn");
+
+    // Se a dona abrir com ?admin=CHAVE, habilita resposta
+    const params = new URLSearchParams(location.search);
+    const adminKey = params.get("admin") || "";
+
+    function fmtDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      return d.toLocaleString("pt-BR");
+    }
+
+    async function apiList() {
+      const r = await fetch(API_URL + "?action=list", { method: "GET" });
+      return r.json();
+    }
+
+    // ✅ POST form-urlencoded (evita preflight/CORS que causa "Failed to fetch")
+    async function apiAsk(email, pergunta) {
+      const body = new URLSearchParams({ action: "ask", email, pergunta });
+
+      const r = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      });
+
+      return r.json();
+    }
+
+    async function apiAnswer(id, resposta) {
+      const body = new URLSearchParams({ action: "answer", adminKey, id, resposta });
+
+      const r = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      });
+
+      return r.json();
+    }
+
+    function escapeHtml(s) {
+      return String(s || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function render(items) {
+      countEl.textContent = `${items.length} pergunta(s)`;
+      feedEl.innerHTML = "";
+
+      if (!items.length) {
+        feedEl.innerHTML = `<div class="msg">Ainda não há perguntas registradas.</div>`;
+        return;
+      }
+
+      for (const it of items) {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <div class="meta">
+            <div class="date">Enviada em: ${fmtDate(it.data)}</div>
+            <div class="date">Protocolo: ${escapeHtml((it.id || "").slice(0, 8))}</div>
+          </div>
+
+          <div class="q">${escapeHtml(it.pergunta)}</div>
+
+          ${it.resposta ? `
+            <div class="a">
+              <strong>Resposta da gestão</strong>
+              <div>${escapeHtml(it.resposta)}</div>
+              <div class="date" style="margin-top:8px;">Respondida em: ${fmtDate(it.data_resposta)}</div>
+            </div>
+          ` : `<div class="date" style="margin-top:10px;">Aguardando resposta.</div>`}
+
+          ${adminKey ? `
+            <div class="admin">
+              <small>Admin (somente para a dona):</small>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+                <input type="text" placeholder="Digite a resposta..." data-answer="${escapeHtml(it.id)}" style="flex:1; min-width:220px;">
+                <button type="button" data-send-answer="${escapeHtml(it.id)}">Responder</button>
+              </div>
+            </div>
+          ` : ""}
+        `;
+        feedEl.appendChild(div);
+      }
+
+      if (adminKey) {
+        feedEl.querySelectorAll("button[data-send-answer]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.getAttribute("data-send-answer");
+            const input = feedEl.querySelector(`input[data-answer="${CSS.escape(id)}"]`);
+            const resposta = (input && input.value ? input.value : "").trim();
+            if (!resposta) { alert("Digite a resposta."); return; }
+
+            btn.disabled = true;
+            btn.textContent = "Enviando...";
+
+            try {
+              const res = await apiAnswer(id, resposta);
+              if (!res.ok) throw new Error(res.error || "Falha ao responder.");
+              await load();
+            } catch (e) {
+              alert(e.message);
+            } finally {
+              btn.disabled = false;
+              btn.textContent = "Responder";
+            }
+          });
+        });
+      }
+    }
+
+    async function load() {
+      statusEl.textContent = "Carregando...";
+      try {
+        const data = await apiList();
+        if (!data.ok) throw new Error(data.error || "Erro ao listar.");
+        render(data.items || []);
+        statusEl.textContent = adminKey ? "Modo admin ativo." : "";
+      } catch (e) {
+        statusEl.textContent = "Não foi possível carregar.";
+        feedEl.innerHTML = `<div class="msg">Erro: ${escapeHtml(e.message)}</div>`;
+      }
+    }
+
+    sendBtn.addEventListener("click", async () => {
+      const email = (emailEl.value || "").trim();
+      const pergunta = (perguntaEl.value || "").trim();
+
+      if (!pergunta) {
+        statusEl.textContent = "Digite a pergunta/sugestão.";
+        return;
+      }
+
+      sendBtn.disabled = true;
+      statusEl.textContent = "Enviando...";
+
+      try {
+        const res = await apiAsk(email, pergunta);
+        if (!res.ok) throw new Error(res.error || "Falha ao enviar.");
+        perguntaEl.value = "";
+        statusEl.textContent = "Enviado com sucesso.";
+        await load();
+      } catch (e) {
+        statusEl.textContent = "Erro ao enviar.";
+        alert(e.message);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
+
+    refreshBtn.addEventListener("click", load);
+
+    load();
+    // Atualiza automaticamente (opcional)
+    setInterval(load, 20000);
+  </script>
+</body>
+</html>
