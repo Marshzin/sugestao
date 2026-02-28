@@ -3,240 +3,548 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Democrata • Perguntas e Sugestões</title>
-
+  <title>Democrata • Portal de Perguntas</title>
   <style>
     :root{
-      --bg:#0b0f14;
-      --panel:#0f1624;
-      --card:#101a2a;
-      --line:#22314a;
-      --text:#e6edf3;
-      --muted:#9aa4b2;
-      --primary:#2b74ff;
-      --shadow: 0 18px 40px rgba(0,0,0,.38);
-      --radius:18px;
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #101828;
+      --muted: #667085;
+      --line: #e4e7ec;
+      --primary: #2563eb;
+      --primary2:#1d4ed8;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --shadow: 0 10px 28px rgba(16,24,40,.10);
+      --radius: 18px;
+      --radius2: 14px;
     }
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
     body{
       margin:0;
-      font-family: system-ui, Segoe UI, Roboto, Arial;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
       background:
-        radial-gradient(900px 500px at 20% -10%, rgba(43,116,255,.18), transparent 60%),
-        linear-gradient(180deg, #070a0f, #0b0f14);
+        radial-gradient(1100px 500px at 10% -10%, rgba(37,99,235,.15), transparent 55%),
+        radial-gradient(900px 500px at 95% 0%, rgba(22,163,74,.12), transparent 52%),
+        var(--bg);
       min-height:100vh;
     }
-    .wrap{max-width:1040px; margin:0 auto; padding:18px;}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px;
-      background:rgba(15,22,36,.75);
+    a{ color:inherit; }
+    .wrap{ max-width: 1120px; margin: 0 auto; padding: 18px; }
+    .header{
+      background: rgba(255,255,255,.85);
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
     }
-    .logo{
-      width:40px;height:40px;border-radius:14px;
-      background:linear-gradient(135deg, rgba(43,116,255,.9), rgba(43,116,255,.2));
-      display:grid;place-items:center;font-weight:800;
+    .brand{ display:flex; align-items:center; gap:12px; min-width:280px; }
+    .mark{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, var(--primary), rgba(37,99,235,.35));
+      color:white;
+      display:grid; place-items:center;
+      font-weight:900;
+      box-shadow: 0 10px 24px rgba(37,99,235,.25);
     }
-    .title h1{font-size:15px;margin:0}
-    .pill{
-      font-size:12px;color:var(--muted);
+    .brand h1{ margin:0; font-size:15px; letter-spacing:.2px; }
+    .brand p{ margin:3px 0 0; font-size:12px; color:var(--muted); }
+    .right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .chip{
       border:1px solid var(--line);
-      padding:7px 10px;border-radius:999px;
+      background: rgba(255,255,255,.9);
+      padding:8px 10px;
+      border-radius: 999px;
+      font-size:12px;
+      color: var(--muted);
     }
-    .tabs{margin-top:14px;display:flex;gap:8px;}
-    .tab{
-      padding:10px 12px;border-radius:12px;
+    .chip strong{ color: var(--text); }
+    .btn{
+      border:0;
+      cursor:pointer;
+      border-radius: 999px;
+      padding:10px 12px;
+      font-weight:800;
+      font-size:13px;
+      background: var(--primary);
+      color:white;
+      transition: .15s ease;
+    }
+    .btn:hover{ background: var(--primary2); }
+    .btn.secondary{
+      background: white;
+      color: var(--text);
       border:1px solid var(--line);
-      background:rgba(16,26,42,.45);
-      cursor:pointer;font-weight:700;font-size:13px;
     }
-    .tab.active{
-      background:rgba(43,116,255,.16);
-      border-color: rgba(43,116,255,.45);
+    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .layout{
+      margin-top:14px;
+      display:grid;
+      gap:14px;
+      grid-template-columns: 1fr;
     }
+    @media(min-width: 980px){
+      .layout{ grid-template-columns: 420px 1fr; }
+    }
+
     .panel{
-      margin-top:12px;
-      background:rgba(15,22,36,.72);
+      background: rgba(255,255,255,.92);
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding:14px;
+      padding: 14px;
     }
-    .card{
-      background:rgba(16,26,42,.7);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px;
+    .panelHeader{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding-bottom: 10px;
+      border-bottom:1px solid var(--line);
+      margin-bottom: 12px;
     }
-    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    .panelHeader h2{ margin:0; font-size:14px; }
+    .hint{ font-size:12px; color: var(--muted); line-height:1.35; }
+
+    label{ display:block; font-size:12px; color: var(--muted); margin: 0 0 6px; }
     input, textarea{
       width:100%;
-      border-radius:14px;
       border:1px solid var(--line);
-      background:rgba(8,12,20,.55);
-      color:var(--text);
-      padding:12px;
+      background:white;
+      border-radius: var(--radius2);
+      padding: 12px;
       outline:none;
+      font-size:14px;
     }
-    textarea{min-height:110px;resize:vertical}
-    .btn{
-      border:0;cursor:pointer;font-weight:700;
-      padding:10px 12px;border-radius:12px;
-      background:var(--primary);color:white;
+    textarea{ min-height: 120px; resize: vertical; }
+    .row{ display:grid; gap:10px; }
+    .status{ font-size:12px; color: var(--muted); }
+    .status.ok{ color: var(--ok); }
+    .status.warn{ color: var(--warn); }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
     }
-    .feed{display:grid;gap:10px;margin-top:12px;}
-    .item{
+    .tab{
       border:1px solid var(--line);
-      background:rgba(8,12,20,.45);
-      border-radius:16px;
-      padding:14px;
+      background:white;
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      color: var(--muted);
     }
-    .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+    .tab.active{
+      color: var(--text);
+      border-color: rgba(37,99,235,.35);
+      background: rgba(37,99,235,.08);
+    }
+
+    .feed{
+      display:grid;
+      gap:12px;
+    }
+    .ticket{
+      background:white;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(16,24,40,.06);
+      overflow:hidden;
+    }
+    .ticketTop{
+      padding:12px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(246,247,251,.65);
+    }
+    .ticketTop .meta{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      font-size:12px;
+      color: var(--muted);
+    }
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:white;
+      font-weight:800;
+      color: var(--muted);
+    }
+    .badge.open{ border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); }
+    .badge.done{ border-color: rgba(22,163,74,.35); background: rgba(22,163,74,.08); }
+
+    .ticketBody{ padding: 14px; }
+    .q{ white-space:pre-wrap; line-height:1.45; font-size:14px; }
     .answer{
-      margin-top:12px;padding:12px;border-radius:14px;
-      border:1px dashed rgba(43,116,255,.6);
-      background:rgba(43,116,255,.08);
+      margin-top:12px;
+      border-left: 4px solid rgba(37,99,235,.55);
+      background: rgba(37,99,235,.06);
+      padding: 12px;
+      border-radius: 12px;
+    }
+    .answer strong{ display:block; margin-bottom:6px; font-size:12px; text-transform:uppercase; letter-spacing:.4px; color: var(--muted); }
+    .adminArea{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px dashed var(--line);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .adminArea input{ flex:1; min-width:220px; }
+    .small{ font-size:12px; color: var(--muted); }
+
+    .empty{
+      padding:16px;
+      border:1px dashed var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.75);
+      color: var(--muted);
+      text-align:center;
     }
   </style>
 </head>
+
 <body>
-
-<div class="wrap">
-  <div class="topbar">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div class="logo">D</div>
-      <div class="title">
-        <h1>Perguntas • Democrata</h1>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <div class="mark">D</div>
+        <div>
+          <h1>Portal de Perguntas • Democrata</h1>
+          <p>Envie dúvidas/sugestões e acompanhe as respostas da gestão.</p>
+        </div>
       </div>
-    </div>
-    <div class="pill" id="countPill">— registros</div>
-  </div>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="ask">Enviar</button>
-    <button class="tab" data-tab="feed">Feed</button>
-    <button class="tab" data-tab="admin">Admin</button>
-  </div>
-
-  <div class="panel">
-
-    <div id="tab-ask">
-      <div class="card">
-        <label>E-mail (opcional)</label>
-        <input id="email" type="email" />
-        <label style="margin-top:10px;">Pergunta</label>
-        <textarea id="question"></textarea>
-        <button class="btn" id="sendBtn" style="margin-top:12px;">Enviar</button>
+      <div class="right">
+        <div class="chip" id="countChip"><strong>—</strong> registros</div>
+        <button class="btn secondary" id="refreshBtn" type="button">Atualizar</button>
       </div>
     </div>
 
-    <div id="tab-feed" style="display:none;">
-      <div class="card">
+    <div class="layout">
+      <!-- LADO ESQUERDO: ENVIAR + ADMIN -->
+      <div class="panel">
+        <div class="panelHeader">
+          <h2>Nova pergunta</h2>
+          <span class="small">Público</span>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="email">E-mail (opcional — não aparece no feed)</label>
+            <input id="email" type="email" placeholder="ex.: vendedor@loja.com" />
+            <div class="hint">Fica salvo apenas para controle interno no Firebase.</div>
+          </div>
+
+          <div>
+            <label for="question">Pergunta / sugestão</label>
+            <textarea id="question" placeholder="Digite sua pergunta ou sugestão..."></textarea>
+            <div class="hint">Máximo de 1000 caracteres. Evite dados sensíveis.</div>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button class="btn" id="sendBtn" type="button">Enviar</button>
+            <span class="status" id="status"></span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <div class="panelHeader" style="border-bottom:0; margin-bottom:8px;">
+            <h2>Admin (dona)</h2>
+            <span class="small" id="authState">Não autenticado</span>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="adminEmail">E-mail</label>
+              <input id="adminEmail" type="email" placeholder="ex.: dona@democrata.com" />
+            </div>
+            <div>
+              <label for="adminPass">Senha</label>
+              <input id="adminPass" type="password" placeholder="********" />
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn" id="loginBtn" type="button">Entrar</button>
+              <button class="btn secondary" id="logoutBtn" type="button" style="display:none;">Sair</button>
+            </div>
+            <div class="hint">Ao entrar, aparecerá o campo “Responder” em cada registro.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LADO DIREITO: FEED -->
+      <div class="panel">
+        <div class="panelHeader">
+          <h2>Feed</h2>
+          <div class="tabs">
+            <button class="tab active" data-filter="all">Todos</button>
+            <button class="tab" data-filter="open">Aguardando</button>
+            <button class="tab" data-filter="done">Respondidos</button>
+          </div>
+        </div>
+
         <div class="feed" id="feed"></div>
       </div>
     </div>
-
-    <div id="tab-admin" style="display:none;">
-      <div class="card">
-        <label>E-mail da dona</label>
-        <input id="adminEmail" type="email" />
-        <label style="margin-top:10px;">Senha</label>
-        <input id="adminPass" type="password" />
-        <button class="btn" id="loginBtn" style="margin-top:12px;">Entrar</button>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, serverTimestamp,
-  query, orderBy, onSnapshot, updateDoc, doc
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-import {
-  getAuth, signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp,
+      query, orderBy, limit, onSnapshot, updateDoc, doc
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import {
+      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-/* 🔹 SEU FIREBASECONFIG JÁ INSERIDO */
-const firebaseConfig = {
-  apiKey: "AIzaSyAAc_t3A2TrhAX8cvbq5IAwttCM-7ffIiM",
-  authDomain: "oioi-6bf50.firebaseapp.com",
-  projectId: "oioi-6bf50",
-  storageBucket: "oioi-6bf50.firebasestorage.app",
-  messagingSenderId: "447740165463",
-  appId: "1:447740165463:web:7a737b320147009f0b1212",
-  measurementId: "G-VWG8G3BX6Q"
-};
+    // ✅ SEU firebaseConfig (já inserido)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAc_t3A2TrhAX8cvbq5IAwttCM-7ffIiM",
+      authDomain: "oioi-6bf50.firebaseapp.com",
+      projectId: "oioi-6bf50",
+      storageBucket: "oioi-6bf50.firebasestorage.app",
+      messagingSenderId: "447740165463",
+      appId: "1:447740165463:web:7a737b320147009f0b1212",
+      measurementId: "G-VWG8G3BX6Q"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-const emailEl = document.getElementById("email");
-const questionEl = document.getElementById("question");
-const sendBtn = document.getElementById("sendBtn");
-const feedEl = document.getElementById("feed");
-const countPill = document.getElementById("countPill");
+    const $ = (id) => document.getElementById(id);
 
-sendBtn.onclick = async () => {
-  const question = questionEl.value.trim();
-  if(!question) return alert("Digite a pergunta.");
+    // Inputs
+    const emailEl = $("email");
+    const questionEl = $("question");
+    const sendBtn = $("sendBtn");
+    const statusEl = $("status");
 
-  await addDoc(collection(db,"questions"),{
-    question,
-    email: emailEl.value.trim(),
-    createdAt: serverTimestamp(),
-    answer:"",
-    answeredAt:null
-  });
+    // Admin
+    const authStateEl = $("authState");
+    const adminEmailEl = $("adminEmail");
+    const adminPassEl = $("adminPass");
+    const loginBtn = $("loginBtn");
+    const logoutBtn = $("logoutBtn");
 
-  questionEl.value="";
-};
+    // Feed
+    const feedEl = $("feed");
+    const countChip = $("countChip");
+    const refreshBtn = $("refreshBtn");
 
-const q = query(collection(db,"questions"), orderBy("createdAt","desc"));
+    // Filter tabs
+    const filterTabs = document.querySelectorAll(".tab");
+    let currentFilter = "all";
 
-onSnapshot(q,(snap)=>{
-  feedEl.innerHTML="";
-  countPill.textContent = snap.size + " registros";
-  snap.forEach(d=>{
-    const data=d.data();
-    const div=document.createElement("div");
-    div.className="item";
-    div.innerHTML=`
-      <div class="meta">
-        <span>${data.createdAt?.toDate().toLocaleString("pt-BR") || ""}</span>
-      </div>
-      <div style="margin-top:8px;">${data.question}</div>
-      ${data.answer?`<div class="answer"><strong>Resposta:</strong><br>${data.answer}</div>`:""}
-    `;
-    feedEl.appendChild(div);
-  });
-});
+    let isAdmin = false;
+    let latestItems = [];
+    let unsubscribe = null;
 
-document.getElementById("loginBtn").onclick = async () => {
-  const email = document.getElementById("adminEmail").value;
-  const pass = document.getElementById("adminPass").value;
-  await signInWithEmailAndPassword(auth,email,pass);
-  alert("Logado com sucesso.");
-};
+    function escapeHtml(s){
+      return String(s || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById("tab-ask").style.display="none";
-    document.getElementById("tab-feed").style.display="none";
-    document.getElementById("tab-admin").style.display="none";
-    document.getElementById("tab-"+tab.dataset.tab).style.display="";
-  };
-});
-</script>
+    function fmtDate(ts){
+      if(!ts) return "—";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleString("pt-BR");
+    }
 
+    function setStatus(text, kind){
+      statusEl.textContent = text || "";
+      statusEl.className = "status" + (kind ? " " + kind : "");
+      if(text) setTimeout(() => { statusEl.textContent = ""; statusEl.className="status"; }, 2200);
+    }
+
+    // Auth
+    onAuthStateChanged(auth, (user) => {
+      isAdmin = !!user;
+      authStateEl.textContent = user ? `Autenticado: ${user.email}` : "Não autenticado";
+      logoutBtn.style.display = user ? "" : "none";
+      render(latestItems);
+    });
+
+    loginBtn.addEventListener("click", async () => {
+      const email = (adminEmailEl.value || "").trim();
+      const pass = (adminPassEl.value || "").trim();
+      if(!email || !pass) return alert("Informe e-mail e senha.");
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Entrando...";
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+      }catch(e){
+        alert("Falha no login. Verifique e-mail/senha.");
+      }finally{
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Entrar";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    // Create question
+    sendBtn.addEventListener("click", async () => {
+      const email = (emailEl.value || "").trim();
+      const question = (questionEl.value || "").trim();
+
+      if(!question) return setStatus("Digite a pergunta/sugestão.", "warn");
+      if(question.length > 1000) return setStatus("Texto muito longo (máx. 1000).", "warn");
+
+      sendBtn.disabled = true;
+      setStatus("Enviando...", "");
+
+      try{
+        await addDoc(collection(db, "questions"), {
+          question,
+          email,                 // não exibimos
+          createdAt: serverTimestamp(),
+          answer: "",
+          answeredAt: null
+        });
+        questionEl.value = "";
+        setStatus("Enviado com sucesso.", "ok");
+      }catch(e){
+        console.error(e);
+        alert("Não foi possível enviar. Verifique firebaseConfig e regras do Firestore.");
+      }finally{
+        sendBtn.disabled = false;
+      }
+    });
+
+    // Filters
+    filterTabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        filterTabs.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter;
+        render(latestItems);
+      });
+    });
+
+    // Firestore realtime
+    function startFeed(){
+      if(unsubscribe) unsubscribe();
+      const qAll = query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(150));
+      unsubscribe = onSnapshot(qAll, (snap) => {
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        latestItems = items;
+        countChip.innerHTML = `<strong>${items.length}</strong> registros`;
+        render(items);
+      });
+    }
+
+    refreshBtn.addEventListener("click", () => startFeed());
+
+    function applyFilter(items){
+      if(currentFilter === "open") return items.filter(x => !x.answer);
+      if(currentFilter === "done") return items.filter(x => !!x.answer);
+      return items;
+    }
+
+    function render(items){
+      const filtered = applyFilter(items);
+      feedEl.innerHTML = "";
+
+      if(!filtered.length){
+        feedEl.innerHTML = `<div class="empty">Nenhum registro para este filtro.</div>`;
+        return;
+      }
+
+      for(const it of filtered){
+        const created = fmtDate(it.createdAt);
+        const proto = (it.id || "").slice(0, 8);
+        const isDone = !!it.answer;
+
+        const el = document.createElement("div");
+        el.className = "ticket";
+        el.innerHTML = `
+          <div class="ticketTop">
+            <div class="meta">
+              <span class="badge">Protocolo: ${escapeHtml(proto)}</span>
+              <span class="badge">Enviada: ${escapeHtml(created)}</span>
+            </div>
+            <span class="badge ${isDone ? "done" : "open"}">${isDone ? "Respondida" : "Aguardando"}</span>
+          </div>
+
+          <div class="ticketBody">
+            <div class="q">${escapeHtml(it.question)}</div>
+
+            ${it.answer ? `
+              <div class="answer">
+                <strong>Resposta da gestão</strong>
+                <div>${escapeHtml(it.answer)}</div>
+                <div class="small" style="margin-top:8px;">Respondida: ${escapeHtml(fmtDate(it.answeredAt))}</div>
+              </div>
+            ` : ""}
+
+            ${isAdmin ? `
+              <div class="adminArea">
+                <input type="text" placeholder="Digite a resposta..." data-answer="${escapeHtml(it.id)}">
+                <button class="btn" type="button" data-send-answer="${escapeHtml(it.id)}">Responder</button>
+              </div>
+            ` : ""}
+          </div>
+        `;
+        feedEl.appendChild(el);
+      }
+
+      bindAdminActions();
+    }
+
+    function bindAdminActions(){
+      if(!isAdmin) return;
+
+      document.querySelectorAll("button[data-send-answer]").forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.getAttribute("data-send-answer");
+          const input = document.querySelector(`input[data-answer="${CSS.escape(id)}"]`);
+          const answer = (input?.value || "").trim();
+          if(!answer) return alert("Digite a resposta.");
+
+          btn.disabled = true;
+          btn.textContent = "Enviando...";
+          try{
+            await updateDoc(doc(db, "questions", id), {
+              answer,
+              answeredAt: serverTimestamp()
+            });
+            input.value = "";
+          }catch(e){
+            console.error(e);
+            alert("Não foi possível responder. Verifique regras do Firestore e login.");
+          }finally{
+            btn.disabled = false;
+            btn.textContent = "Responder";
+          }
+        };
+      });
+    }
+
+    startFeed();
+  </script>
 </body>
 </html>
