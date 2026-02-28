@@ -7,19 +7,20 @@
   <style>
     :root { --bg:#0b0f14; --card:#121826; --muted:#9aa4b2; --text:#e6edf3; --line:#243044; }
     body{ margin:0; font-family:system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,#0b0f14,#070a0f); color:var(--text); }
-    .wrap{ max-width:920px; margin:0 auto; padding:20px; }
+    .wrap{ max-width:980px; margin:0 auto; padding:20px; }
     header{ display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
     h1{ font-size:18px; margin:0; letter-spacing:.2px; }
     .badge{ font-size:12px; color:var(--muted); border:1px solid var(--line); padding:6px 10px; border-radius:999px; }
+    .grid{ display:grid; gap:14px; grid-template-columns:1fr; }
+    @media (min-width:980px){ .grid{ grid-template-columns: 1.2fr .8fr; } }
     .card{ background:rgba(18,24,38,.92); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:0 12px 30px rgba(0,0,0,.35); }
     .stack{ display:grid; gap:12px; }
     label{ font-size:12px; color:var(--muted); display:block; margin:0 0 6px; }
     input, textarea{ width:100%; box-sizing:border-box; background:#0e1422; color:var(--text); border:1px solid var(--line);
       padding:12px 12px; border-radius:12px; outline:none; }
     textarea{ min-height:88px; resize:vertical; }
-    .row{ display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width:720px){ .row{ grid-template-columns: 1fr 1fr; } }
     button{ background:#2b74ff; color:white; border:0; padding:12px 14px; border-radius:12px; cursor:pointer; font-weight:600; }
+    button.secondary{ background:transparent; border:1px solid var(--line); color:var(--text); }
     button:disabled{ opacity:.6; cursor:not-allowed; }
     .sub{ font-size:12px; color:var(--muted); line-height:1.35; }
     .feed{ margin-top:14px; display:grid; gap:12px; }
@@ -29,104 +30,130 @@
     .q{ margin:10px 0 0; white-space:pre-wrap; }
     .a{ margin:12px 0 0; padding:12px; border-radius:12px; border:1px dashed #38527a; background:rgba(43,116,255,.08); }
     .a strong{ display:block; margin-bottom:6px; }
-    .admin{ margin-top:10px; padding-top:10px; border-top:1px solid rgba(36,48,68,.6); }
-    .admin small{ color:var(--muted); }
     .msg{ font-size:13px; color:var(--muted); }
-    .top-actions{ display:flex; gap:8px; align-items:center; }
-    .linkbtn{ background:transparent; border:1px solid var(--line); color:var(--text); }
+    .row{ display:grid; gap:10px; grid-template-columns:1fr; }
+    .row2{ display:grid; gap:10px; grid-template-columns:1fr; }
+    @media (min-width:720px){ .row2{ grid-template-columns: 1fr 1fr; } }
+    .hr{ height:1px; background:rgba(36,48,68,.6); margin:12px 0; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>Democrata • Perguntas e Sugestões</h1>
-      <div class="top-actions">
-        <span class="badge" id="count">—</span>
-        <button class="linkbtn" id="refreshBtn" type="button">Atualizar</button>
-      </div>
+      <span class="badge" id="count">—</span>
     </header>
 
-    <div class="card" style="margin-top:14px;">
-      <div class="stack">
-        <div class="row">
-          <div>
-            <label for="email">E-mail (opcional, não será exibido)</label>
-            <input id="email" type="email" placeholder="ex.: vendedor@loja.com" />
+    <div class="grid" style="margin-top:14px;">
+      <!-- Coluna principal: formulário + feed -->
+      <div class="card">
+        <div class="stack">
+          <div class="row2">
+            <div>
+              <label for="email">E-mail (opcional, não será exibido)</label>
+              <input id="email" type="email" placeholder="ex.: vendedor@loja.com" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <div class="sub">O e-mail fica somente no banco para controle (não aparece no site).</div>
+            </div>
           </div>
+
           <div>
-            <label>&nbsp;</label>
-            <div class="sub">O e-mail é apenas para identificar várias perguntas da mesma pessoa (fica registrado somente na planilha).</div>
+            <label for="question">Pergunta / sugestão</label>
+            <textarea id="question" placeholder="Digite aqui..."></textarea>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button id="sendBtn" type="button">Enviar</button>
+            <button id="refreshBtn" class="secondary" type="button">Atualizar</button>
+            <span class="msg" id="status"></span>
           </div>
         </div>
 
-        <div>
-          <label for="pergunta">Pergunta / sugestão</label>
-          <textarea id="pergunta" placeholder="Digite aqui..."></textarea>
-        </div>
-
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <button id="sendBtn" type="button">Enviar</button>
-          <span class="msg" id="status"></span>
-        </div>
+        <div class="feed" id="feed"></div>
       </div>
 
-      <div class="feed" id="feed"></div>
+      <!-- Coluna lateral: login da dona + modo admin -->
+      <div class="card">
+        <div class="stack">
+          <div>
+            <div class="sub" style="margin-bottom:6px;">Área da dona (para responder)</div>
+            <div class="msg" id="authState">Não autenticado.</div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div id="loginBox" class="stack">
+            <div>
+              <label for="adminEmail">E-mail</label>
+              <input id="adminEmail" type="email" placeholder="ex.: dona@democrata.com" />
+            </div>
+            <div>
+              <label for="adminPass">Senha</label>
+              <input id="adminPass" type="password" placeholder="********" />
+            </div>
+            <button id="loginBtn" type="button">Entrar</button>
+          </div>
+
+          <div id="adminBox" class="stack" style="display:none;">
+            <div class="sub">Logado. Agora você pode responder diretamente em cada pergunta do feed.</div>
+            <button id="logoutBtn" class="secondary" type="button">Sair</button>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="sub">
+            Dica: hospede este arquivo no GitHub Pages/Netlify/Vercel para funcionar em PC e celular.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script>
-    // ✅ SUA URL DO APPS SCRIPT (Web App /exec)
-    const API_URL = "https://script.google.com/macros/s/AKfycby0wnMuwzC87rV7IYJ5sN2Qc7rTFAz5P0z082UvceoQP7fdaXlkjxJWuDgvb86StmWW/exec";
+  <!-- Firebase (CDN) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, onSnapshot, updateDoc, doc
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import {
+      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
+    // ✅ SUBSTITUA pelo seu firebaseConfig (Firebase Console → Project settings → Web app)
+    const firebaseConfig = {
+  apiKey : "AIzaSyAAc_t3A2TrhAX8cvbq5IAwttCM-7ffIiM" , 
+  authDomain:"oioi-6bf50.firebaseapp.com", 
+  ID do projeto : "oioi-6bf50" , 
+  bucket de armazenamento : "oioi-6bf50.firebasestorage.app" , 
+  messagingSenderId : " 447740165463" 
+  appId : "1:447740165463:web:7a737b320147009f0b1212" , 
+  ID da medição : "G-VWG8G3BX6Q" 
+    };
+
+    // ---------- Init ----------
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // ---------- UI helpers ----------
     const $ = (id) => document.getElementById(id);
-
     const emailEl = $("email");
-    const perguntaEl = $("pergunta");
+    const questionEl = $("question");
     const sendBtn = $("sendBtn");
+    const refreshBtn = $("refreshBtn");
     const statusEl = $("status");
     const feedEl = $("feed");
     const countEl = $("count");
-    const refreshBtn = $("refreshBtn");
 
-    // Se a dona abrir com ?admin=CHAVE, habilita resposta
-    const params = new URLSearchParams(location.search);
-    const adminKey = params.get("admin") || "";
-
-    function fmtDate(iso) {
-      if (!iso) return "";
-      const d = new Date(iso);
-      return d.toLocaleString("pt-BR");
-    }
-
-    async function apiList() {
-      const r = await fetch(API_URL + "?action=list", { method: "GET" });
-      return r.json();
-    }
-
-    // ✅ POST form-urlencoded (evita preflight/CORS que causa "Failed to fetch")
-    async function apiAsk(email, pergunta) {
-      const body = new URLSearchParams({ action: "ask", email, pergunta });
-
-      const r = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-        body
-      });
-
-      return r.json();
-    }
-
-    async function apiAnswer(id, resposta) {
-      const body = new URLSearchParams({ action: "answer", adminKey, id, resposta });
-
-      const r = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-        body
-      });
-
-      return r.json();
-    }
+    const authStateEl = $("authState");
+    const loginBox = $("loginBox");
+    const adminBox = $("adminBox");
+    const adminEmailEl = $("adminEmail");
+    const adminPassEl = $("adminPass");
+    const loginBtn = $("loginBtn");
+    const logoutBtn = $("logoutBtn");
 
     function escapeHtml(s) {
       return String(s || "")
@@ -135,6 +162,95 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function fmtDate(ts) {
+      if (!ts) return "";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleString("pt-BR");
+    }
+
+    // ---------- Auth state ----------
+    let isAdmin = false;
+
+    onAuthStateChanged(auth, (user) => {
+      isAdmin = !!user;
+      authStateEl.textContent = user ? `Autenticado: ${user.email}` : "Não autenticado.";
+      loginBox.style.display = user ? "none" : "grid";
+      adminBox.style.display = user ? "grid" : "none";
+      // re-render para mostrar campos de resposta quando logado
+      // (o feed é renderizado pelo snapshot; só chamamos re-render implicitamente ao receber update)
+    });
+
+    loginBtn.addEventListener("click", async () => {
+      const email = (adminEmailEl.value || "").trim();
+      const pass = (adminPassEl.value || "").trim();
+      if (!email || !pass) return alert("Informe e-mail e senha.");
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Entrando...";
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        alert("Falha no login. Verifique e-mail/senha.");
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Entrar";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+    });
+
+    // ---------- Firestore: add question ----------
+    sendBtn.addEventListener("click", async () => {
+      const email = (emailEl.value || "").trim();
+      const question = (questionEl.value || "").trim();
+
+      if (!question) {
+        statusEl.textContent = "Digite a pergunta/sugestão.";
+        return;
+      }
+      if (question.length > 1000) {
+        statusEl.textContent = "Pergunta muito longa (máx. 1000 caracteres).";
+        return;
+      }
+
+      sendBtn.disabled = true;
+      statusEl.textContent = "Enviando...";
+
+      try {
+        await addDoc(collection(db, "questions"), {
+          question,
+          email, // não exibiremos
+          createdAt: serverTimestamp(),
+          answer: "",
+          answeredAt: null,
+        });
+
+        questionEl.value = "";
+        statusEl.textContent = "Enviado com sucesso.";
+      } catch (e) {
+        console.error(e);
+        statusEl.textContent = "Erro ao enviar.";
+        alert("Não foi possível enviar. Verifique as regras do Firestore e a configuração do Firebase.");
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
+
+    // ---------- Firestore: realtime feed ----------
+    const q = query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(100));
+
+    let unsubscribe = null;
+
+    function startFeed() {
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(q, (snap) => {
+        const items = [];
+        snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
+        render(items);
+      });
     }
 
     function render(items) {
@@ -149,52 +265,58 @@
       for (const it of items) {
         const div = document.createElement("div");
         div.className = "item";
+
+        const created = it.createdAt ? fmtDate(it.createdAt) : "—";
+
         div.innerHTML = `
           <div class="meta">
-            <div class="date">Enviada em: ${fmtDate(it.data)}</div>
+            <div class="date">Enviada em: ${escapeHtml(created)}</div>
             <div class="date">Protocolo: ${escapeHtml((it.id || "").slice(0, 8))}</div>
           </div>
 
-          <div class="q">${escapeHtml(it.pergunta)}</div>
+          <div class="q">${escapeHtml(it.question)}</div>
 
-          ${it.resposta ? `
+          ${it.answer ? `
             <div class="a">
               <strong>Resposta da gestão</strong>
-              <div>${escapeHtml(it.resposta)}</div>
-              <div class="date" style="margin-top:8px;">Respondida em: ${fmtDate(it.data_resposta)}</div>
+              <div>${escapeHtml(it.answer)}</div>
+              <div class="date" style="margin-top:8px;">Respondida em: ${it.answeredAt ? escapeHtml(fmtDate(it.answeredAt)) : "—"}</div>
             </div>
           ` : `<div class="date" style="margin-top:10px;">Aguardando resposta.</div>`}
 
-          ${adminKey ? `
-            <div class="admin">
-              <small>Admin (somente para a dona):</small>
-              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+          ${isAdmin ? `
+            <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(36,48,68,.6);">
+              <div class="sub" style="margin-bottom:8px;">Responder (admin)</div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <input type="text" placeholder="Digite a resposta..." data-answer="${escapeHtml(it.id)}" style="flex:1; min-width:220px;">
                 <button type="button" data-send-answer="${escapeHtml(it.id)}">Responder</button>
               </div>
             </div>
           ` : ""}
         `;
+
         feedEl.appendChild(div);
       }
 
-      if (adminKey) {
-        feedEl.querySelectorAll("button[data-send-answer]").forEach(btn => {
+      if (isAdmin) {
+        feedEl.querySelectorAll("button[data-send-answer]").forEach((btn) => {
           btn.addEventListener("click", async () => {
             const id = btn.getAttribute("data-send-answer");
             const input = feedEl.querySelector(`input[data-answer="${CSS.escape(id)}"]`);
-            const resposta = (input && input.value ? input.value : "").trim();
-            if (!resposta) { alert("Digite a resposta."); return; }
+            const answer = (input?.value || "").trim();
+            if (!answer) return alert("Digite a resposta.");
 
             btn.disabled = true;
             btn.textContent = "Enviando...";
 
             try {
-              const res = await apiAnswer(id, resposta);
-              if (!res.ok) throw new Error(res.error || "Falha ao responder.");
-              await load();
+              await updateDoc(doc(db, "questions", id), {
+                answer,
+                answeredAt: serverTimestamp(),
+              });
             } catch (e) {
-              alert(e.message);
+              console.error(e);
+              alert("Não foi possível responder. Verifique as regras do Firestore e se a dona está logada.");
             } finally {
               btn.disabled = false;
               btn.textContent = "Responder";
@@ -204,50 +326,14 @@
       }
     }
 
-    async function load() {
-      statusEl.textContent = "Carregando...";
-      try {
-        const data = await apiList();
-        if (!data.ok) throw new Error(data.error || "Erro ao listar.");
-        render(data.items || []);
-        statusEl.textContent = adminKey ? "Modo admin ativo." : "";
-      } catch (e) {
-        statusEl.textContent = "Não foi possível carregar.";
-        feedEl.innerHTML = `<div class="msg">Erro: ${escapeHtml(e.message)}</div>`;
-      }
-    }
-
-    sendBtn.addEventListener("click", async () => {
-      const email = (emailEl.value || "").trim();
-      const pergunta = (perguntaEl.value || "").trim();
-
-      if (!pergunta) {
-        statusEl.textContent = "Digite a pergunta/sugestão.";
-        return;
-      }
-
-      sendBtn.disabled = true;
-      statusEl.textContent = "Enviando...";
-
-      try {
-        const res = await apiAsk(email, pergunta);
-        if (!res.ok) throw new Error(res.error || "Falha ao enviar.");
-        perguntaEl.value = "";
-        statusEl.textContent = "Enviado com sucesso.";
-        await load();
-      } catch (e) {
-        statusEl.textContent = "Erro ao enviar.";
-        alert(e.message);
-      } finally {
-        sendBtn.disabled = false;
-      }
+    refreshBtn.addEventListener("click", () => {
+      // Feed já é em tempo real; botão apenas reinicia a assinatura
+      startFeed();
+      statusEl.textContent = "Atualizado.";
+      setTimeout(() => statusEl.textContent = "", 1200);
     });
 
-    refreshBtn.addEventListener("click", load);
-
-    load();
-    // Atualiza automaticamente (opcional)
-    setInterval(load, 20000);
+    startFeed();
   </script>
 </body>
 </html>
